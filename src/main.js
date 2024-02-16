@@ -1,22 +1,28 @@
 const fixScroll = () => {
 
-	const doFix = (nodeList) => {
-		for(const rootNode of nodeList) {
-			if(rootNode.shadowRoot != null) {
-				let sr = rootNode.shadowRoot;
-				for(let childList of sr.querySelectorAll(".ag-center-cols-viewport")) {
-					let initStyle = childList.getAttribute("style");
+	const patchStyle = (nodeList) => {
+
+		for(const innerNode of nodeList) {
+			if(innerNode.shadowRoot != null) {
+				for(const targetNode of innerNode.shadowRoot.querySelectorAll('.ag-center-cols-viewport')) {
+					let initStyle = targetNode.getAttribute("style");
 					if(initStyle.search(/scrollbar/) == -1) {
 						let modStyle = initStyle + " scrollbar-width: initial;"
-						childList.setAttribute("style", modStyle)
+						targetNode.setAttribute("style", modStyle)
 					}
 				}
 			}
 		}
+
 	};
 
-	doFix(document.getElementsByClassName("ng-star-inserted"));
-	doFix(document.getElementsByTagName("gs-report-element-overlay"));
+
+	for(const rootNode of document.getElementsByClassName('ng-star-inserted')) {
+		if(rootNode.shadowRoot != null) {
+			patchStyle(rootNode.shadowRoot.querySelectorAll(".ng-star-inserted"));
+			patchStyle(rootNode.shadowRoot.querySelectorAll("gs-report-widget-element-dashboard"));
+		}
+	}
 }
 
 
